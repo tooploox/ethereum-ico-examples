@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "truffle": "^4.1.11"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "truffle compile",
+    "test": "truffle test"
+  }
+}
