@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 import "truffle/Assert.sol";
-import "../../contracts/02-presale-multiple-rounds/SimpleToken.sol";
+import "../contracts/SimpleToken.sol";
 
 
 contract SimpleTokenTest {
@@ -10,6 +10,12 @@ contract SimpleTokenTest {
 
   function beforeEach() public {
     token = new SimpleToken("Tooploox", "TPX", 18, 21000000);
+  }
+
+  function testSettingDetails() public {
+    Assert.equal(token.name(), "Tooploox", "name is invalid");
+    Assert.equal(token.symbol(), "TPX", "symbol is invalid");
+    Assert.equal(uint(token.decimals()), uint(18), "decimals is invalid");
   }
 
   function testSettingTotalSupply() public {
