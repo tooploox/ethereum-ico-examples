@@ -14,6 +14,7 @@ contract SimpleToken is DetailedERC20, StandardToken {
     DetailedERC20(_name, _symbol, _decimals)
     public
   {
+    require(_amount > 0, "amount has to be greater than 0");
     totalSupply_ = _amount.mul(10 ** uint256(_decimals));
     balances[msg.sender] = totalSupply_;
     emit Transfer(address(0), msg.sender, totalSupply_);
