@@ -13,8 +13,8 @@ contract GenericCrowdsale is TimedCrowdsale {
     address _wallet,
     ERC20 _token
   )
-  Crowdsale(_rate, _wallet, _token)
-  TimedCrowdsale(_openingTime, _closingTime)
-  public
+    Crowdsale(_rate, _wallet, _token)
+    TimedCrowdsale(_openingTime, _closingTime)
+    public
   {}
 }
