@@ -1,7 +1,7 @@
 pragma solidity 0.4.24;
 
 import "truffle/Assert.sol";
-import "../../contracts/01-generic/SimpleToken.sol";
+import "../../contracts/SimpleToken.sol";
 import "../../contracts/01-generic/GenericCrowdsale.sol";
 
 

@@ -1,6 +1,6 @@
 pragma solidity 0.4.24;
 
-import "./SimpleToken.sol";
+import "../SimpleToken.sol";
 import "openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol";
 
 
@@ -16,7 +16,5 @@ contract GenericCrowdsale is TimedCrowdsale {
   Crowdsale(_rate, _wallet, _token)
   TimedCrowdsale(_openingTime, _closingTime)
   public
-  {
-
-  }
+  {}
 }
