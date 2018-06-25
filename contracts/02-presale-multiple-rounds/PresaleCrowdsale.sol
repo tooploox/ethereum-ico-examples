@@ -5,7 +5,7 @@ import "openzeppelin-solidity/contracts/crowdsale/emission/AllowanceCrowdsale.so
 import "openzeppelin-solidity/contracts/crowdsale/validation/WhitelistedCrowdsale.sol";
 
 
-contract PresaleCrowdsale is Crowdsale, AllowanceCrowdsale, WhitelistedCrowdsale {
+contract PresaleCrowdsale is AllowanceCrowdsale, WhitelistedCrowdsale {
   constructor(
     uint256 _rate,
     address _wallet,

@@ -8,10 +8,14 @@ import "../../contracts/02-presale-multiple-rounds/PresaleCrowdsale.sol";
 contract PresaleCrowdsaleTest {
   SimpleToken token;
   PresaleCrowdsale crowdsale;
+  uint256 public initialBalance = 1 ether;
+
+  function () public payable {}
 
   function beforeEach() public {
     token = new SimpleToken("Tooploox", "TPX", 18, 21000000);
     crowdsale = new PresaleCrowdsale(1000, address(this), token, address(this));
+    token.increaseApproval(address(crowdsale), 1000 * 1 ether);
   }
 
   function testSettingDetails() public {
@@ -22,7 +26,18 @@ contract PresaleCrowdsaleTest {
   }
 
   function testIntrustingCrowdsaleWithTokens() public {
-    token.increaseApproval(address(crowdsale), 1000000);
-    Assert.equal(crowdsale.remainingTokens(), 1000000, "remainingTokens is invalid");
+    Assert.equal(crowdsale.remainingTokens(), 1000 * 1 ether, "remainingTokens is invalid");
+  }
+
+  function testDisallowBuyingNotWhitelisted() public {
+    bool result = address(crowdsale).call.value(0.1 ether)(bytes4(keccak256("buyTokens(address)")), address(this));
+    Assert.equal(result, false, "allows buying not whitelisted users");
+  }
+
+  function testAllowBuyingWhitelisted() public {
+    crowdsale.addToWhitelist(address(this));
+    bool result = address(crowdsale).call.value(0.1 ether)(bytes4(keccak256("buyTokens(address)")), address(this));
+    Assert.equal(result, true, "disallows buying whitelisted users");
+    crowdsale.removeFromWhitelist(address(this));
   }
 }
