@@ -1,6 +1,12 @@
 const SimpleTokenVesting = artifacts.require("./03-token-vesting/SimpleTokenVesting.sol");
+const SimpleToken = artifacts.require("./SimpleToken.sol");
 
 module.exports = (deployer, network, [owner]) => {
+  deployTokenVestingContracts(deployer);
+  deployToken(deployer);
+};
+
+function deployTokenVestingContracts(deployer) {
   const beneficiaries = [
     0x7319879Eb04477e39c2dbaA846470FEb7b2966e1,
     0xa2164D11832e1De722c24ed87C82c53318f23b87,
@@ -18,4 +24,8 @@ module.exports = (deployer, network, [owner]) => {
   {
     deployer.deploy(SimpleTokenVesting, beneficiary, start, cliff, duration, revocable);
   });
-};
+}
+
+function deployToken(deployer) {
+  deployer.deploy(SimpleToken, "Tooploox", "TPX", 18, 21000000);
+}
