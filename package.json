@@ -1,9 +1,13 @@
 {
   "dependencies": {
     "openzeppelin-solidity": "1.10.0",
-    "truffle": "^4.1.11"
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "truffle": "^4.1.11",
+    "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
+    "parcel-bundler": "^1.9.3",
     "solium": "^1.1.7"
   },
   "scripts": {
