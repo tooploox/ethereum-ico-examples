@@ -6,13 +6,14 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./SimpleTokenVesting.sol";
 
 
-contract SimpleTokenVestingCrowdsale is Ownable {
+contract TokenVestingCrowdsale is Ownable {
   mapping(address => uint8) beneficiariesOptions;
   mapping(address => bytes32) beneficiariesNames;
-  mapping(address => TokenVesting) beneficiariesTokenVestingContracts;
+  mapping(address => TokenVesting) public beneficiariesTokenVestingContracts;
   address[] beneficiariesList;
 
-  event Debug(uint8);
+  event VestingTokenContractDeployed(TokenVesting _tokenVestingContract);
+  event Calculated(uint256);
 
   ERC20 token;
   Crowdsale crowdsale;
@@ -25,7 +26,6 @@ contract SimpleTokenVestingCrowdsale is Ownable {
   bool tokenVestingContractsDeployed = false;
 
   constructor(
-    ERC20 _token,
     Crowdsale _crowdsale,
     uint256 _start,
     uint256 _cliff,
@@ -34,14 +34,18 @@ contract SimpleTokenVestingCrowdsale is Ownable {
   )
     public
   {
-    token = _token;
     crowdsale = _crowdsale;
     start = _start;
     cliff = _cliff;
     duration = _duration;
     revocable = _revocable;
-    totalSupply = _token.balanceOf(address(this));
+    token = crowdsale.token();
+  }
 
+  function refreshTokenTotalSupply() {
+    require(tokenVestingContractsDeployed == false, "Tokes already transfered");
+
+    totalSupply = token.balanceOf(address(this));
   }
 
   function addBeneficiary(bytes32 _name, address _address, uint8 _options) onlyOwner public {
@@ -52,6 +56,13 @@ contract SimpleTokenVestingCrowdsale is Ownable {
     beneficiariesOptions[_address] = _options;
   }
 
+  function getBeneficiariesCount() public constant returns(uint count) {
+    return beneficiariesList.length;
+  }
+
+  function areVestingContractsDeployed() public constant returns(bool) {
+    return tokenVestingContractsDeployed;
+  }
 
   function deployVestingTokens() onlyOwner public {
     require(tokenVestingContractsDeployed == false, "Tokes already transfered");
@@ -62,6 +73,8 @@ contract SimpleTokenVestingCrowdsale is Ownable {
       address _beneficiary = beneficiariesList[i];
       TokenVesting tokenVestingContract = new TokenVesting(_beneficiary, start, cliff, duration, revocable);
       beneficiariesTokenVestingContracts[_beneficiary] = tokenVestingContract;
+      emit VestingTokenContractDeployed(tokenVestingContract);
+      emit Calculated(totalSupply);
       token.transfer(address(tokenVestingContract), calculateNumberOfTokensPerBeneficiary(_beneficiary));
     }
 
