@@ -23,7 +23,6 @@ contract MultiBeneficiaryTokenVesting is Ownable {
 
   address[] beneficiaries;
 
-
   constructor(
     ERC20Basic _token,
     uint256 _start,
@@ -32,7 +31,7 @@ contract MultiBeneficiaryTokenVesting is Ownable {
   )
   public
   {
-    require(_cliff <= _duration);
+    require(_cliff <= _duration, "Cliff has to be lower or equal to duration");
     token = _token;
     duration = _duration;
     cliff = _start.add(_cliff);
@@ -40,9 +39,9 @@ contract MultiBeneficiaryTokenVesting is Ownable {
   }
 
   function addBeneficiary(address _beneficiary, uint256 _sharesAmount) onlyOwner public {
-    require(_beneficiary != address(0));
-    require(_sharesAmount > 0);
-    require(shares[_beneficiary] == 0);
+    require(_beneficiary != address(0), "The beneficiary's address cannot be 0");
+    require(_sharesAmount > 0, "Shares amount has to be greater than 0");
+    require(shares[_beneficiary] == 0, "The beneficiary is already on the list");
 
     releaseAllTokens();
 
@@ -58,14 +57,14 @@ contract MultiBeneficiaryTokenVesting is Ownable {
   function releaseAllTokens() onlyBeneficiaries public {
     uint256 unreleased = releasableAmount();
 
-    require(unreleased > 0);
+    if(unreleased > 0) {
+      uint beneficiariesCount = beneficiaries.length;
 
-    uint beneficiariesCount = beneficiaries.length;
+      released = released.add(unreleased);
 
-    released = released.add(unreleased);
-
-    for (uint i=0; i< beneficiariesCount; i++) {
-      release(beneficiaries[i], calculateShares(unreleased, beneficiaries[i]));
+      for (uint i=0; i< beneficiariesCount; i++) {
+        release(beneficiaries[i], calculateShares(unreleased, beneficiaries[i]));
+      }
     }
   }
 

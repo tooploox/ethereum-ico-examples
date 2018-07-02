@@ -138,7 +138,7 @@ function displaySummary(tokenInstance, beneficiariesContracts) {
             return `${b.name} (${b.vestingContract}) => ${tokenInstance.balanceOf(b.vestingContract)} tokens` 
           }).join("\n       ")
        }
-       Crowdsale (${GenericCrowdsale.address}) => ${tokenInstance.balanceOf(GenericCrowdsale.address)} tokens\`
+       Crowdsale (${GenericCrowdsale.address}) => ${tokenInstance.balanceOf(GenericCrowdsale.address)} tokens
 
     ==========================================================================================
   `)
