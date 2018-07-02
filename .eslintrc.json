@@ -1,0 +1,11 @@
+{
+    "extends": "airbnb",
+    "env": {
+      "browser": true
+    },
+    "rules": {
+        "quotes": ["error", "double"],
+        "object-curly-newline": 0,
+        "react/jsx-one-expression-per-line": 0
+    }
+}

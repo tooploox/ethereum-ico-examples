@@ -7,6 +7,11 @@
     "web3": "^1.0.0-beta.34"
   },
   "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.10.0",
     "parcel-bundler": "^1.9.4",
     "solium": "^1.1.7"
   },
@@ -14,6 +19,8 @@
     "start": "parcel app/index.html",
     "build": "truffle compile",
     "test": "truffle test",
-    "lint:sol": "solium -d ."
+    "lint": "npm run lint:sol && npm run lint:js",
+    "lint:sol": "solium -d .",
+    "lint:js": "eslint {app,test} --ext .js*"
   }
 }

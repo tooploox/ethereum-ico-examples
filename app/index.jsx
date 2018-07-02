@@ -52,7 +52,8 @@ class App extends React.Component {
   }
 
   getPrice() {
-    return this.state.amount / this.state.rate;
+    const { amount, rate } = this.state;
+    return amount / rate;
   }
 
   changeAmount(ev) {
@@ -61,13 +62,10 @@ class App extends React.Component {
 
   buy(ev) {
     ev.preventDefault();
-    const value = this.getPrice() * 10 ** 18;
+    const value = this.getPrice() * (10 ** 18);
 
     this.web3.eth.getAccounts()
-      .then(([from]) => this.Crowdsale.methods.buyTokens(from).send({ value, from }))
-      .then((x) => {
-        console.log(x);
-      })
+      .then(([from]) => this.Crowdsale.methods.buyTokens(from).send({ value, from }));
   }
 
   render() {
@@ -78,13 +76,15 @@ class App extends React.Component {
         <h1 className="display-4">Buy {symbol}, awesome ERC20 token!</h1>
         <p className="lead">See the source to learn how to setup crowdsale landing page</p>
         <hr className="my-4" />
-        <p>You own: {balance / 10 ** decimals} {symbol}</p>
-        <p>{left / 10 ** decimals} {symbol} is left for sale</p>
+        <p>You own: {balance / (10 ** decimals)} {symbol}</p>
+        <p>{left / (10 ** decimals)} {symbol} is left for sale</p>
         <form onSubmit={this.buy}>
           <div className="input-group mb-3">
             <input type="number" className="form-control" placeholder={`How many ${symbol}s you need?`} onChange={this.changeAmount} value={amount} min="1" required />
             <div className="input-group-append">
-              <button className="btn btn-outline-secondary" disabled={!left}>Pay {this.getPrice()} ETH</button>
+              <button className="btn btn-outline-secondary" disabled={!left} type="submit">
+                Pay {this.getPrice()} ETH
+              </button>
             </div>
           </div>
         </form>
