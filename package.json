@@ -6,6 +6,9 @@
     "truffle": "^4.1.13",
     "web3": "^1.0.0-beta.34"
   },
+  "engines": {
+    "node": "8.11.3"
+  },
   "devDependencies": {
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^17.0.0",

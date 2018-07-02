@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8.11.3
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+
+      - run:
+          name: Install dependencies
+          command: npm install
+
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+          paths:
+            - ./node_modules
+
+      - run:
+          name: Lint files
+          command: npm run lint
+
+      - run:
+          name: Run unit tests
+          command: npm run test
