@@ -35,15 +35,21 @@ const GenericCrowdsale = artifacts.require("./01-generic/GenericCrowdsale.sol");
 const SimpleToken = artifacts.require("./SimpleToken.sol");
 const MultiBeneficiaryTokenVesting = artifacts.require("./03-token-vesting/MultiBeneficiaryTokenVesting.sol");
 
-module.exports = async (deployer, network, [owner]) => {
-  await deployToken(deployer);
-  await deployer.link(SimpleToken, [MultiBeneficiaryTokenVesting, GenericCrowdsale]);
-  await deployMultiBeneficiaryTokenVestingContract(deployer);
-  await transferTokensToVestingContract(beneficiaries, owner);
-  await addBeneficiariesToVestingContract(beneficiaries, owner);
-  await deployCrowdsale(deployer, owner);
-  await transferRemainingTokensToCrowdsale(beneficiaries, owner);
-  await displaySummary();
+// module.exports = async (deployer, network, [owner]) => {
+//   await deployToken(deployer);
+//   await deployer.link(SimpleToken, [MultiBeneficiaryTokenVesting, GenericCrowdsale]);
+//   await deployMultiBeneficiaryTokenVestingContract(deployer);
+//   await transferTokensToVestingContract(beneficiaries, owner);
+//   await addBeneficiariesToVestingContract(beneficiaries, owner);
+//   await deployCrowdsale(deployer, owner);
+//   await transferRemainingTokensToCrowdsale(beneficiaries, owner);
+//   await displaySummary();
+// };
+
+module.exports = (deployer, network, [owner]) => {
+  return deployer
+    .then(() => deployToken(deployer))
+    .then(() => deployMultiBeneficiaryTokenVestingContract(deployer));
 };
 
 function deployToken(deployer) {
@@ -52,7 +58,8 @@ function deployToken(deployer) {
     tokenSettings.name,
     tokenSettings.symbol,
     tokenSettings.decimals,
-    tokenSettings.amount
+    tokenSettings.amount,
+    // { overwrite: false },
   );
 }
 
@@ -138,12 +145,12 @@ async function displaySummary() {
 
        MultiBeneficiaryTokenVesting (${MultiBeneficiaryTokenVesting.address}) => ${(await getInstance(SimpleToken)).balanceOf(MultiBeneficiaryTokenVesting.address)} tokens
        Crowdsale (${GenericCrowdsale.address}) => ${(await getInstance(SimpleToken)).balanceOf(GenericCrowdsale.address)} tokens
-       
+
        Beneficiaries:
-       
+
        ${
           beneficiaries.map((b) => {
-            return `${b.address} => ${vestingInstance.shares(b.address)} shares` 
+            return `${b.address} => ${vestingInstance.shares(b.address)} shares`
           }).join("\n       ")
        }
 

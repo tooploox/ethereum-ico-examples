@@ -4,9 +4,9 @@ const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-const MultiBeneficiaryTokenVesting = artifacts.require("./03-token-vesting/MultiBeneficiaryTokenVesting.sol");
+const MultiBeneficiaryTokenVesting = artifacts.require("MultiBeneficiaryTokenVesting");
 
-contract("MultiBeneficiaryTokenVesting", async (accounts) => {
+contract("MultiBeneficiaryTokenVesting", (accounts) => {
   const [owner] = accounts;
 
   let tokenVesting;
