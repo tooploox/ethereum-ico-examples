@@ -44,7 +44,7 @@ module.exports = async (deployer, network, [owner]) => {
   await deployCrowdsale(deployer, owner);
   await transferTokensToVestingContracts(tokenInstance, beneficiariesContracts, owner);
   await transferRemainingTokensToCrowdsale(tokenInstance, beneficiariesContracts, owner);
-  displaySummary(tokenInstance, beneficiariesContracts);
+  await displaySummary(tokenInstance, beneficiariesContracts);
 };
 
 function deployTokenVestingContracts(deployer, beneficiaries) {
@@ -119,7 +119,7 @@ function calculateRemainingTokensPercentage(beneficiaries) {
   }, 100);
 }
 
-function displaySummary(tokenInstance, beneficiariesContracts) {
+async function displaySummary(tokenInstance, beneficiariesContracts) {
   console.log(`
     ==========================================================================================
 

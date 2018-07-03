@@ -21,7 +21,7 @@ contract MultiBeneficiaryTokenVesting is Ownable {
 
   uint256 released = 0;
 
-  address[] beneficiaries;
+  address[] public beneficiaries;
 
   constructor(
     ERC20Basic _token,
