@@ -13,7 +13,7 @@ module.exports = async (deployer, network, [owner]) => {
 
   await deployer.deploy(GenericCrowdsale, openingTime, closingTime, rate, owner, SimpleToken.address);
 
-  console.log(`Transfering tokens...`);
+  console.log("Transfering tokens...");
   const Token = await SimpleToken.deployed();
-  await Token.transfer(GenericCrowdsale.address, 20000000 * 10 ** 18, { from: owner });
+  await Token.transfer(GenericCrowdsale.address, 20000000 * (10 ** 18), { from: owner });
 };
