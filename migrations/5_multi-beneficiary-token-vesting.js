@@ -81,8 +81,7 @@ async function transferTokensToVestingContract(owner) {
   const sharesSum = beneficiaries.reduce((sharesSum, beneficiary) => sharesSum + beneficiary.shares, 0);
   return (await SimpleToken.deployed()).transfer(
     MultiBeneficiaryTokenVesting.address,
-    calculateNumberOfTokensForSharesPercentage(sharesSum),
-    { from: owner }
+    calculateNumberOfTokensForSharesPercentage(sharesSum)
   );
 }
 
@@ -95,8 +94,7 @@ async function addBeneficiariesToVestingContract(owner) {
     beneficiaries.map(async (beneficiary) => {
       (await MultiBeneficiaryTokenVesting.deployed()).addBeneficiary(
         beneficiary.address,
-        beneficiary.shares,
-        { from: owner }
+        beneficiary.shares
       );
     })
   );
@@ -105,8 +103,7 @@ async function addBeneficiariesToVestingContract(owner) {
 async function transferRemainingTokensToCrowdsale(owner) {
   (await SimpleToken.deployed()).transfer(
     GenericCrowdsale.address,
-    calculateRemainingTokens(),
-    { from: owner }
+    calculateRemainingTokens()
   );
 }
 
@@ -122,6 +119,7 @@ function calculateRemainingTokensPercentage() {
 
 async function displaySummary() {
   const vestingInstance = (await MultiBeneficiaryTokenVesting.deployed());
+  const tokenInstance = (await SimpleToken.deployed());
   console.log(`
     ==========================================================================================
 
@@ -133,14 +131,14 @@ async function displaySummary() {
 
        Balances:
 
-       MultiBeneficiaryTokenVesting (${MultiBeneficiaryTokenVesting.address}) => ${(await SimpleToken.deployed()).balanceOf(MultiBeneficiaryTokenVesting.address)} tokens
-       Crowdsale (${GenericCrowdsale.address}) => ${(await SimpleToken.deployed()).balanceOf(GenericCrowdsale.address)} tokens
+       MultiBeneficiaryTokenVesting (${MultiBeneficiaryTokenVesting.address}) => ${await tokenInstance.balanceOf(MultiBeneficiaryTokenVesting.address)} tokens
+       Crowdsale (${GenericCrowdsale.address}) => ${await tokenInstance.balanceOf(GenericCrowdsale.address)} tokens
 
        Beneficiaries:
 
        ${
           beneficiaries.map((b) => {
-            return `${b.address} => ${vestingInstance.shares(b.address)} shares`
+            return `${b.address} => ${vestingInstance.contract.shares(b.address)} shares`
           }).join("\n       ")
        }
 
