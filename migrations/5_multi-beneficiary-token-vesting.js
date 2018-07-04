@@ -35,21 +35,15 @@ const GenericCrowdsale = artifacts.require("./01-generic/GenericCrowdsale.sol");
 const SimpleToken = artifacts.require("./SimpleToken.sol");
 const MultiBeneficiaryTokenVesting = artifacts.require("./03-token-vesting/MultiBeneficiaryTokenVesting.sol");
 
-// module.exports = async (deployer, network, [owner]) => {
-//   await deployToken(deployer);
-//   await deployer.link(SimpleToken, [MultiBeneficiaryTokenVesting, GenericCrowdsale]);
-//   await deployMultiBeneficiaryTokenVestingContract(deployer);
-//   await transferTokensToVestingContract(beneficiaries, owner);
-//   await addBeneficiariesToVestingContract(beneficiaries, owner);
-//   await deployCrowdsale(deployer, owner);
-//   await transferRemainingTokensToCrowdsale(beneficiaries, owner);
-//   await displaySummary();
-// };
-
 module.exports = (deployer, network, [owner]) => {
   return deployer
     .then(() => deployToken(deployer))
-    .then(() => deployMultiBeneficiaryTokenVestingContract(deployer));
+    .then(() => deployMultiBeneficiaryTokenVestingContract(deployer))
+    .then(() => transferTokensToVestingContract(owner))
+    .then(() => addBeneficiariesToVestingContract(owner))
+    .then(() => deployCrowdsale(deployer, owner))
+    .then(() => transferRemainingTokensToCrowdsale(owner))
+    .then(() => displaySummary())
 };
 
 function deployToken(deployer) {
@@ -59,7 +53,6 @@ function deployToken(deployer) {
     tokenSettings.symbol,
     tokenSettings.decimals,
     tokenSettings.amount,
-    // { overwrite: false },
   );
 }
 
@@ -73,8 +66,6 @@ function deployMultiBeneficiaryTokenVestingContract(deployer) {
   );
 }
 
-
-
 function deployCrowdsale(deployer, owner) {
   return deployer.deploy(
     GenericCrowdsale,
@@ -86,10 +77,9 @@ function deployCrowdsale(deployer, owner) {
   );
 }
 
-async function transferTokensToVestingContract(beneficiaries, owner) {
+async function transferTokensToVestingContract(owner) {
   const sharesSum = beneficiaries.reduce((sharesSum, beneficiary) => sharesSum + beneficiary.shares, 0);
-
-  return (await getInstance(SimpleToken)).transfer(
+  return (await SimpleToken.deployed()).transfer(
     MultiBeneficiaryTokenVesting.address,
     calculateNumberOfTokensForSharesPercentage(sharesSum),
     { from: owner }
@@ -100,10 +90,10 @@ function calculateNumberOfTokensForSharesPercentage(shares) {
   return tokenSettings.amount * shares / 100;
 }
 
-async function addBeneficiariesToVestingContract(beneficiaries, owner) {
+async function addBeneficiariesToVestingContract(owner) {
   return Promise.all(
     beneficiaries.map(async (beneficiary) => {
-      (await getInstance(MultiBeneficiaryTokenVesting)).addBeneficiary(
+      (await MultiBeneficiaryTokenVesting.deployed()).addBeneficiary(
         beneficiary.address,
         beneficiary.shares,
         { from: owner }
@@ -112,26 +102,26 @@ async function addBeneficiariesToVestingContract(beneficiaries, owner) {
   );
 }
 
-async function transferRemainingTokensToCrowdsale(beneficiaries, owner) {
-  (await getInstance(SimpleToken)).transfer(
+async function transferRemainingTokensToCrowdsale(owner) {
+  (await SimpleToken.deployed()).transfer(
     GenericCrowdsale.address,
-    calculateRemainingTokens(beneficiaries),
+    calculateRemainingTokens(),
     { from: owner }
   );
 }
 
-function calculateRemainingTokens(beneficiaries) {
-  return tokenSettings.amount * calculateRemainingTokensPercentage(beneficiaries) / 100;
+function calculateRemainingTokens() {
+  return tokenSettings.amount * calculateRemainingTokensPercentage() / 100;
 }
 
-function calculateRemainingTokensPercentage(beneficiaries) {
+function calculateRemainingTokensPercentage() {
   return beneficiaries.reduce((remaning, beneficiary) => {
     return remaning - beneficiary.shares;
   }, 100);
 }
 
 async function displaySummary() {
-  const vestingInstance = (await getInstance(MultiBeneficiaryTokenVesting));
+  const vestingInstance = (await MultiBeneficiaryTokenVesting.deployed());
   console.log(`
     ==========================================================================================
 
@@ -143,8 +133,8 @@ async function displaySummary() {
 
        Balances:
 
-       MultiBeneficiaryTokenVesting (${MultiBeneficiaryTokenVesting.address}) => ${(await getInstance(SimpleToken)).balanceOf(MultiBeneficiaryTokenVesting.address)} tokens
-       Crowdsale (${GenericCrowdsale.address}) => ${(await getInstance(SimpleToken)).balanceOf(GenericCrowdsale.address)} tokens
+       MultiBeneficiaryTokenVesting (${MultiBeneficiaryTokenVesting.address}) => ${(await SimpleToken.deployed()).balanceOf(MultiBeneficiaryTokenVesting.address)} tokens
+       Crowdsale (${GenericCrowdsale.address}) => ${(await SimpleToken.deployed()).balanceOf(GenericCrowdsale.address)} tokens
 
        Beneficiaries:
 
@@ -156,8 +146,4 @@ async function displaySummary() {
 
     ==========================================================================================
   `)
-}
-
-async function getInstance(contract) {
-  return (await contract.deployed()).contract
 }
