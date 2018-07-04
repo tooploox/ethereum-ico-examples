@@ -8,13 +8,15 @@ import "../../contracts/02-presale-multiple-rounds/RoundCrowdsale.sol";
 contract RoundCrowdsaleTest {
   SimpleToken token;
   RoundCrowdsale crowdsale;
+  uint256 openingTime = now;
+  uint256 closingTime = now + 2 days;
   uint256 public initialBalance = 1 ether;
 
   function () public payable {}
 
   function beforeEach() public {
     token = new SimpleToken("Tooploox", "TPX", 18, 21000000);
-    crowdsale = new RoundCrowdsale(1000, address(this), token, address(this), now, now + 1 days);
+    crowdsale = new RoundCrowdsale(1000, address(this), token, address(this), openingTime, closingTime);
     token.increaseApproval(address(crowdsale), 1000 * 1 ether);
   }
 
@@ -23,8 +25,8 @@ contract RoundCrowdsaleTest {
     Assert.equal(crowdsale.wallet(), address(this), "wallet is invalid");
     Assert.equal(crowdsale.token(), address(token), "token is invalid");
     Assert.equal(crowdsale.tokenWallet(), address(this), "tokenWallet is invalid");
-    Assert.equal(crowdsale.openingTime(), now, "openingTime is invalid");
-    Assert.equal(crowdsale.closingTime(), now + 1 days, "closingTime is invalid");
+    Assert.equal(crowdsale.openingTime(), openingTime, "openingTime is invalid");
+    Assert.equal(crowdsale.closingTime(), closingTime, "closingTime is invalid");
   }
 
   function testIntrustingCrowdsaleWithTokens() public {
