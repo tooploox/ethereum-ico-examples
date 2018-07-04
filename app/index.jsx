@@ -1,6 +1,7 @@
 import React from "react";
-import { render } from "react-dom";
 import Web3 from "web3";
+import { render } from "react-dom";
+import { BigNumber } from "bignumber.js";
 
 const SimpleToken = require("../build/contracts/SimpleToken.json");
 const GenericCrowdsale = require("../build/contracts/GenericCrowdsale.json");
@@ -40,16 +41,16 @@ class App extends React.Component {
       });
 
       this.Token.methods.decimals().call().then((decimals) => {
-        this.setState({ decimals });
+        this.setState({ decimals: 10 ** decimals });
       });
 
       this.Token.methods.balanceOf(CROWDSALE).call().then((left) => {
-        this.setState({ left });
+        this.setState({ left: new BigNumber(left) });
       });
 
       this.web3.eth.getAccounts()
         .then(([account]) => this.Token.methods.balanceOf(account).call())
-        .then(balance => this.setState({ balance }));
+        .then(balance => this.setState({ balance: new BigNumber(balance) }));
     });
   }
 
@@ -64,7 +65,8 @@ class App extends React.Component {
 
   buy(ev) {
     ev.preventDefault();
-    const value = this.getPrice() * (10 ** 18);
+    const { decimals } = this.state;
+    const value = this.getPrice() * decimals;
 
     this.web3.eth.getAccounts()
       .then(([from]) => this.Crowdsale.methods.buyTokens(from).send({ value, from }));
@@ -73,13 +75,15 @@ class App extends React.Component {
   render() {
     const { symbol, balance, amount, decimals, left } = this.state;
 
+    if (!balance || !left) return null;
+
     return (
       <div className="jumbotron">
         <h1 className="display-4">Buy {symbol}, awesome ERC20 token!</h1>
         <p className="lead">See the source to learn how to setup crowdsale landing page</p>
         <hr className="my-4" />
-        <p>You own: {balance / (10 ** decimals)} {symbol}</p>
-        <p>{left / (10 ** decimals)} {symbol} is left for sale</p>
+        <p>You own: {balance.div(decimals).toString()} {symbol}</p>
+        <p>{left.div(decimals).toString()} {symbol} is left for sale</p>
         <form onSubmit={this.buy}>
           <div className="input-group mb-3">
             <input type="number" className="form-control" placeholder={`How many ${symbol}s you need?`} onChange={this.changeAmount} value={amount} min="1" required />
