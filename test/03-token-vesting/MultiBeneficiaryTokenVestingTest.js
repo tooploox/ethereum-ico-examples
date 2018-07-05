@@ -16,7 +16,7 @@ const beneficiary2 = '0x9e9Bf5E5D100f45a3527c7eacC84E0a185fc7E0D';
 const beneficiary3 = '0xc63f73cdf9dd2d0aafc63d650d637a848f469a89';
 
 contract("MultiBeneficiaryTokenVesting", (accounts) => {
-  const [owner] = accounts;
+  const [owner, other] = accounts;
 
   let token;
   let tokenVesting;
@@ -61,6 +61,20 @@ contract("MultiBeneficiaryTokenVesting", (accounts) => {
   describe("Ownable implementation", () => {
     it("sets owner on deploy", async () => {
       expect(await tokenVesting.owner()).to.equal(owner);
+    });
+  });
+
+  describe("releasing tokens", () => {
+    it("allows a beneficiary to release tokens", async () => {
+      expect(tokenVesting.releaseAllTokens).not.to.throw();
+    });
+
+    it("disallows others to release tokens", async () => {
+      tokenVesting.releaseAllTokens({from: other}).then(assert.fail).catch((error) => {
+        if(error.toString().indexOf("transaction: revert") === -1) {
+          assert(false, error.toString());
+        }
+      });
     });
   });
 
