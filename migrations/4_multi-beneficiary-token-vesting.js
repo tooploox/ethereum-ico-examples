@@ -3,13 +3,13 @@ const day = 24 * 60 * 60;
 
 const beneficiaries = [
   {
-    address: '0x7319879Eb04477e39c2dbaA846470FEb7b2966e1',
-    shares:  15,
+    address: "0x7319879Eb04477e39c2dbaA846470FEb7b2966e1",
+    shares: 15,
   },
   {
-    address: '0x9e9Bf5E5D100f45a3527c7eacC84E0a185fc7E0D',
-    shares:  20,
-  }
+    address: "0x9e9Bf5E5D100f45a3527c7eacC84E0a185fc7E0D",
+    shares: 20,
+  },
 ];
 
 const tokenSettings = {
@@ -22,7 +22,7 @@ const tokenSettings = {
 const vestingSettings = {
   start: now + day,
   cliff: 365 * day,
-  duration: 3 * 365 * day
+  duration: 3 * 365 * day,
 };
 
 const crowdsaleSettings = {
@@ -35,16 +35,14 @@ const GenericCrowdsale = artifacts.require("./01-generic/GenericCrowdsale.sol");
 const SimpleToken = artifacts.require("./SimpleToken.sol");
 const MultiBeneficiaryTokenVesting = artifacts.require("./03-token-vesting/MultiBeneficiaryTokenVesting.sol");
 
-module.exports = (deployer, network, [owner]) => {
-  return deployer
-    .then(() => deployToken(deployer))
-    .then(() => deployMultiBeneficiaryTokenVestingContract(deployer))
-    .then(() => transferTokensToVestingContract(owner))
-    .then(() => addBeneficiariesToVestingContract(owner))
-    .then(() => deployCrowdsale(deployer, owner))
-    .then(() => transferRemainingTokensToCrowdsale(owner))
-    .then(() => displaySummary())
-};
+module.exports = (deployer, network, [owner]) => deployer
+  .then(() => deployToken(deployer))
+  .then(() => deployMultiBeneficiaryTokenVestingContract(deployer))
+  .then(() => transferTokensToVestingContract(owner))
+  .then(() => addBeneficiariesToVestingContract(owner))
+  .then(() => deployCrowdsale(deployer, owner))
+  .then(() => transferRemainingTokensToCrowdsale(owner))
+  .then(() => displaySummary());
 
 function deployToken(deployer) {
   return deployer.deploy(
@@ -73,7 +71,7 @@ function deployCrowdsale(deployer, owner) {
     crowdsaleSettings.closingTime,
     crowdsaleSettings.rate,
     owner,
-    SimpleToken.address
+    SimpleToken.address,
   );
 }
 
@@ -81,7 +79,7 @@ async function transferTokensToVestingContract(owner) {
   const sharesSum = beneficiaries.reduce((sharesSum, beneficiary) => sharesSum + beneficiary.shares, 0);
   return (await SimpleToken.deployed()).transfer(
     MultiBeneficiaryTokenVesting.address,
-    calculateNumberOfTokensForSharesPercentage(sharesSum)
+    calculateNumberOfTokensForSharesPercentage(sharesSum),
   );
 }
 
@@ -94,16 +92,16 @@ async function addBeneficiariesToVestingContract(owner) {
     beneficiaries.map(async (beneficiary) => {
       (await MultiBeneficiaryTokenVesting.deployed()).addBeneficiary(
         beneficiary.address,
-        beneficiary.shares
+        beneficiary.shares,
       );
-    })
+    }),
   );
 }
 
 async function transferRemainingTokensToCrowdsale(owner) {
   (await SimpleToken.deployed()).transfer(
     GenericCrowdsale.address,
-    calculateRemainingTokens()
+    calculateRemainingTokens(),
   );
 }
 
@@ -112,9 +110,7 @@ function calculateRemainingTokens() {
 }
 
 function calculateRemainingTokensPercentage() {
-  return beneficiaries.reduce((remaning, beneficiary) => {
-    return remaning - beneficiary.shares;
-  }, 100);
+  return beneficiaries.reduce((remaning, beneficiary) => remaning - beneficiary.shares, 100);
 }
 
 async function displaySummary() {
@@ -137,11 +133,9 @@ async function displaySummary() {
        Beneficiaries:
 
        ${
-          beneficiaries.map((b) => {
-            return `${b.address} => ${vestingInstance.contract.shares(b.address)} shares`
-          }).join("\n       ")
-       }
+  beneficiaries.map(b => `${b.address} => ${vestingInstance.contract.shares(b.address)} shares`).join("\n       ")
+}
 
     ==========================================================================================
-  `)
+  `);
 }

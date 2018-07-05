@@ -8,15 +8,15 @@ import "../../contracts/01-generic/GenericCrowdsale.sol";
 contract GenericCrowdsaleTest {
   GenericCrowdsale crowdsale;
   SimpleToken token;
-  uint256 public constant TOTAL_SUPPLY = 30000000;
-  uint256 public constant RATE = 10000;
-  uint8 public constant DECIMAL_PLACES = 5;
-  uint256 public OPENING_TIME = now + 1 days;
-  uint256 public CLOSING_TIME = OPENING_TIME + 1 days;
+  uint256 public constant totalSupply = 30000000;
+  uint256 public constant rate = 10000;
+  uint8 public constant decimalPlaces = 5;
+  uint256 public openingTime = now + 1 days;
+  uint256 public closingTime = openingTime + 1 days;
 
   function beforeEach() public {
-    token = new SimpleToken("Tooploox", "TPX", DECIMAL_PLACES, TOTAL_SUPPLY);
-    crowdsale = new GenericCrowdsale(OPENING_TIME, CLOSING_TIME, RATE, address(this), token);
+    token = new SimpleToken("Tooploox", "TPX", decimalPlaces, totalSupply);
+    crowdsale = new GenericCrowdsale(openingTime, closingTime, rate, address(this), token);
   }
 
   function testSettingToken() public {
@@ -26,21 +26,21 @@ contract GenericCrowdsaleTest {
   function testTransferSenderTotalSupply() public {
     Assert.equal(
       token.balanceOf(address(this)),
-      TOTAL_SUPPLY * (10 ** uint256(DECIMAL_PLACES)),
+      totalSupply * (10 ** uint256(decimalPlaces)),
       "total supply not transfered to the sender"
     );
   }
 
   function testSettingOpeningTime() public {
-    Assert.equal(crowdsale.openingTime(), OPENING_TIME, "opening time is invalid");
+    Assert.equal(crowdsale.openingTime(), openingTime, "opening time is invalid");
   }
 
   function testSettingClosingTime() public {
-    Assert.equal(crowdsale.closingTime(), CLOSING_TIME, "closing time is invalid");
+    Assert.equal(crowdsale.closingTime(), closingTime, "closing time is invalid");
   }
 
   function testSettingRate() public {
-    Assert.equal(crowdsale.rate(), RATE, "rate is invalid");
+    Assert.equal(crowdsale.rate(), rate, "rate is invalid");
   }
 
   function testSettingWallet() public {
