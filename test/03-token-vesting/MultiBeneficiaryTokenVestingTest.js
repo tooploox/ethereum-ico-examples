@@ -2,7 +2,7 @@ const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 const increaseTime = require("../support/time-travel");
 
-const now = () => { return web3.eth.getBlock(web3.eth.blockNumber).timestamp };
+const now = () => web3.eth.getBlock(web3.eth.blockNumber).timestamp;
 const day = 24 * 60 * 60;
 
 chai.use(chaiAsPromised);
@@ -11,9 +11,9 @@ const { expect } = chai;
 const MultiBeneficiaryTokenVesting = artifacts.require("MultiBeneficiaryTokenVesting");
 const SimpleToken = artifacts.require("SimpleToken");
 
-const beneficiary1 = '0x7319879Eb04477e39c2dbaA846470FEb7b2966e1';
-const beneficiary2 = '0x9e9Bf5E5D100f45a3527c7eacC84E0a185fc7E0D';
-const beneficiary3 = '0xc63f73cdf9dd2d0aafc63d650d637a848f469a89';
+const beneficiary1 = "0x7319879Eb04477e39c2dbaA846470FEb7b2966e1";
+const beneficiary2 = "0x9e9Bf5E5D100f45a3527c7eacC84E0a185fc7E0D";
+const beneficiary3 = "0xc63f73cdf9dd2d0aafc63d650d637a848f469a89";
 
 contract("MultiBeneficiaryTokenVesting", (accounts) => {
   const [owner, other] = accounts;
@@ -23,11 +23,15 @@ contract("MultiBeneficiaryTokenVesting", (accounts) => {
   let vestingSettings;
   let tokenSettings;
 
+  async function balanceOf(address) {
+    return Math.round(web3.fromWei(await token.balanceOf(address), "ether").toNumber());
+  }
+
   beforeEach(async () => {
     vestingSettings = {
       start: now(),
       cliff: 30 * day,
-      duration: 3 * 30 * day
+      duration: 3 * 30 * day,
     };
 
     tokenSettings = {
@@ -50,7 +54,7 @@ contract("MultiBeneficiaryTokenVesting", (accounts) => {
       token.address,
       vestingSettings.start,
       vestingSettings.cliff,
-      vestingSettings.duration
+      vestingSettings.duration,
     ).then((instance) => {
       tokenVesting = instance;
     });
@@ -70,8 +74,8 @@ contract("MultiBeneficiaryTokenVesting", (accounts) => {
     });
 
     it("disallows others to release tokens", async () => {
-      tokenVesting.releaseAllTokens({from: other}).then(assert.fail).catch((error) => {
-        if(error.toString().indexOf("transaction: revert") === -1) {
+      tokenVesting.releaseAllTokens({ from: other }).then(assert.fail).catch((error) => {
+        if (error.toString().indexOf("transaction: revert") === -1) {
           assert(false, error.toString());
         }
       });
@@ -177,8 +181,4 @@ contract("MultiBeneficiaryTokenVesting", (accounts) => {
       });
     });
   });
-
-  async function balanceOf(address) {
-    return Math.round(web3.fromWei(await token.balanceOf(address), "ether").toNumber());
-  }
 });

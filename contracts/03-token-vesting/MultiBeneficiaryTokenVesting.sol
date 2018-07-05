@@ -57,24 +57,34 @@ contract MultiBeneficiaryTokenVesting is Ownable {
   function releaseAllTokens() onlyBeneficiaries public {
     uint256 unreleased = releasableAmount();
 
-    if(unreleased > 0) {
+    if (unreleased > 0) {
       uint beneficiariesCount = beneficiaries.length;
 
       released = released.add(unreleased);
 
-      for (uint i=0; i< beneficiariesCount; i++) {
+      for (uint i = 0; i < beneficiariesCount; i++) {
         release(beneficiaries[i], calculateShares(unreleased, beneficiaries[i]));
       }
     }
   }
 
-  function release(address _beneficiary, uint256 _amount) private {
-    token.safeTransfer(_beneficiary, _amount);
-    emit Released(_beneficiary, _amount);
-  }
-
   function releasableAmount() public view returns (uint256) {
     return vestedAmount().sub(released);
+  }
+
+  function calculateShares(uint256 _amount, address _beneficiary) public view returns (uint256) {
+    return _amount.mul(shares[_beneficiary]).div(totalShares());
+  }
+
+  function totalShares() public view returns (uint256) {
+    uint sum = 0;
+    uint beneficiariesCount = beneficiaries.length;
+
+    for (uint i = 0; i < beneficiariesCount; i++) {
+      sum = sum.add(shares[beneficiaries[i]]);
+    }
+
+    return sum;
   }
 
   function vestedAmount() public view returns (uint256) {
@@ -90,18 +100,8 @@ contract MultiBeneficiaryTokenVesting is Ownable {
     }
   }
 
-  function calculateShares(uint256 _amount, address _beneficiary) public view returns (uint256) {
-    return _amount.mul(shares[_beneficiary]).div(totalShares());
-  }
-
-  function totalShares() public view returns (uint256) {
-    uint sum = 0;
-    uint beneficiariesCount = beneficiaries.length;
-
-    for (uint i=0; i< beneficiariesCount; i++) {
-      sum = sum.add(shares[beneficiaries[i]]);
-    }
-
-    return sum;
+  function release(address _beneficiary, uint256 _amount) private {
+    token.safeTransfer(_beneficiary, _amount);
+    emit Released(_beneficiary, _amount);
   }
 }

@@ -1,7 +1,14 @@
 {
     "extends": "airbnb",
     "env": {
-      "browser": true
+      "browser": true,
+      "jest": true
+    },
+    "globals": {
+      "web3": true,
+      "assert": true,
+      "contract": true,
+      "artifacts": true
     },
     "rules": {
         "quotes": ["error", "double"],
