@@ -180,5 +180,24 @@ contract("MultiBeneficiaryTokenVesting", (accounts) => {
         expect((await balanceOf(beneficiary3))).to.equal(100000);
       });
     });
+
+    describe("when a beneficiary is added during the vesting time", () => {
+      it("releases tokens having regard shares ratio", async () => {
+        await tokenVesting.addBeneficiary(beneficiary1, 1);
+        await tokenVesting.addBeneficiary(beneficiary2, 1);
+
+        increaseTime(30 * day);
+        await tokenVesting.releaseAllTokens();
+        expect((await balanceOf(beneficiary1))).to.equal(150000);
+        expect((await balanceOf(beneficiary2))).to.equal(150000);
+
+        await tokenVesting.addBeneficiary(beneficiary3, 1);
+        increaseTime(60 * day);
+        await tokenVesting.releaseAllTokens();
+        expect((await balanceOf(beneficiary1))).to.equal(350000);
+        expect((await balanceOf(beneficiary2))).to.equal(350000);
+        expect((await balanceOf(beneficiary3))).to.equal(200000);
+      });
+    });
   });
 });
