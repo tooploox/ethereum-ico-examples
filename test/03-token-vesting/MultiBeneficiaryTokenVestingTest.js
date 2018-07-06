@@ -153,31 +153,31 @@ contract("MultiBeneficiaryTokenVesting", (accounts) => {
       });
     });
 
-    describe("when ratio is 7/1/1", () => {
+    describe("when ratio is 6/1/2", () => {
       it("releases tokens having regard shares ratio", async () => {
-        await tokenVesting.addBeneficiary(beneficiary1, 7);
+        await tokenVesting.addBeneficiary(beneficiary1, 6);
         await tokenVesting.addBeneficiary(beneficiary2, 1);
-        await tokenVesting.addBeneficiary(beneficiary3, 1);
+        await tokenVesting.addBeneficiary(beneficiary3, 2);
 
         increaseTime(90 * day);
         await tokenVesting.releaseAllTokens();
-        expect((await balanceOf(beneficiary1))).to.equal(700000);
+        expect((await balanceOf(beneficiary1))).to.equal(600000);
         expect((await balanceOf(beneficiary2))).to.equal(100000);
-        expect((await balanceOf(beneficiary3))).to.equal(100000);
+        expect((await balanceOf(beneficiary3))).to.equal(200000);
       });
     });
 
-    describe("when ratio is 70/10/10", () => {
+    describe("when ratio is 60/10/20", () => {
       it("releases tokens having regard shares ratio", async () => {
-        await tokenVesting.addBeneficiary(beneficiary1, 70);
+        await tokenVesting.addBeneficiary(beneficiary1, 60);
         await tokenVesting.addBeneficiary(beneficiary2, 10);
-        await tokenVesting.addBeneficiary(beneficiary3, 10);
+        await tokenVesting.addBeneficiary(beneficiary3, 20);
 
         increaseTime(90 * day);
         await tokenVesting.releaseAllTokens();
-        expect((await balanceOf(beneficiary1))).to.equal(700000);
+        expect((await balanceOf(beneficiary1))).to.equal(600000);
         expect((await balanceOf(beneficiary2))).to.equal(100000);
-        expect((await balanceOf(beneficiary3))).to.equal(100000);
+        expect((await balanceOf(beneficiary3))).to.equal(200000);
       });
     });
 
