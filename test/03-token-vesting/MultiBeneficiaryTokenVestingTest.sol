@@ -42,6 +42,10 @@ contract MultiBeneficiaryTokenVestingTest {
     Assert.equal(vesting.shares(beneficiary3), 15, "beneficiary3 has wrong number of shares");
 
     Assert.equal(vesting.totalShares(), 20 + 25 + 15, "Total shares number is invalid");
+
+    vesting.addBeneficiary(beneficiary3, 30);
+
+    Assert.equal(vesting.shares(beneficiary3), 45, "beneficiary3 has wrong number of shares");
   }
 
   function testCalculatingShares() public {

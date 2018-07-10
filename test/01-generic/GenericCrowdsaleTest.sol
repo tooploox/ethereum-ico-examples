@@ -42,7 +42,7 @@ contract GenericCrowdsaleTest {
   }
 
   function testSettingRate() public {
-    Assert.equal(crowdsale.rate(), rate, "rate is invalid");
+    Assert.equal(crowdsale.rate(), RATE, "rate is invalid");
   }
 
   function testSettingWallet() public {
