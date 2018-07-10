@@ -14,6 +14,7 @@ contract MultiBeneficiaryTokenVestingTest {
   address beneficiary3 = 0x9e9Bf5E5D100f45a3527c7eacC84E0a185fc7E0D;
   address beneficiary4 = 0xDEb2C03f17614d1543997AfD86fe7072bFAA36ac;
 
+  // solium-disable-next-line security/no-block-members
   uint256 start = now + 1 days;
   uint256 cliff = 365 days;
   uint256 duration = 3 * 365 days;
@@ -30,7 +31,6 @@ contract MultiBeneficiaryTokenVestingTest {
     Assert.equal(vesting.duration(), duration, "duration is invalid");
     Assert.equal(vesting.token(), address(token), "token is invalid");
   }
-
 
   function testAddingBeneficiaries() public {
     vesting.addBeneficiary(beneficiary1, 20);

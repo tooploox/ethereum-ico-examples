@@ -7,6 +7,7 @@ import "../../contracts/03-token-vesting/SimpleTokenVesting.sol";
 contract SimpleTokenVestingTest {
   SimpleTokenVesting vesting;
   address beneficiary = 0x7319879Eb04477e39c2dbaA846470FEb7b2966e1;
+  // solium-disable-next-line security/no-block-members
   uint256 start = now + 1 days;
   uint256 cliff = 365 days;
   uint256 duration = 3 * 365 days;
