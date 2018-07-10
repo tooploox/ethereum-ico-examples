@@ -49,7 +49,7 @@ contract MultiBeneficiaryTokenVesting is Ownable {
 
     releaseAllTokens();
 
-    if(shares[_beneficiary] == 0) {
+    if (shares[_beneficiary] == 0) {
       beneficiaries.push(_beneficiary);
     }
 
