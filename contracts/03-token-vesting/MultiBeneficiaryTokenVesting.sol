@@ -46,12 +46,14 @@ contract MultiBeneficiaryTokenVesting is Ownable {
   function addBeneficiary(address _beneficiary, uint256 _sharesAmount) onlyOwner public {
     require(_beneficiary != address(0), "The beneficiary's address cannot be 0");
     require(_sharesAmount > 0, "Shares amount has to be greater than 0");
-    require(shares[_beneficiary] == 0, "The beneficiary is already on the list");
 
     releaseAllTokens();
 
-    beneficiaries.push(_beneficiary);
-    shares[_beneficiary] = _sharesAmount;
+    if(shares[_beneficiary] == 0) {
+      beneficiaries.push(_beneficiary);
+    }
+
+    shares[_beneficiary] = shares[_beneficiary].add(_sharesAmount);
   }
 
   function releaseAllTokens() onlyBeneficiaries public {
