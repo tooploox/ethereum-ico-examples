@@ -8,15 +8,26 @@ import "../../contracts/02-presale-multiple-rounds/RoundCrowdsale.sol";
 contract RoundCrowdsaleTest {
   SimpleToken token;
   RoundCrowdsale crowdsale;
+
+  // solium-disable security/no-block-members
   uint256 openingTime = now;
   uint256 closingTime = now + 2 days;
+  // solium-enable security/no-block-members
+
   uint256 public initialBalance = 1 ether;
 
   function () public payable {}
 
   function beforeEach() public {
     token = new SimpleToken("Tooploox", "TPX", 18, 21000000);
-    crowdsale = new RoundCrowdsale(1000, address(this), token, address(this), openingTime, closingTime);
+    crowdsale = new RoundCrowdsale(
+      1000,
+      address(this),
+      token,
+      address(this),
+      openingTime,
+      closingTime
+    );
     token.increaseApproval(address(crowdsale), 1000 * 1 ether);
   }
 

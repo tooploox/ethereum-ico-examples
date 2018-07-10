@@ -8,15 +8,17 @@ import "../../contracts/01-generic/GenericCrowdsale.sol";
 contract GenericCrowdsaleTest {
   GenericCrowdsale crowdsale;
   SimpleToken token;
-  uint256 public constant totalSupply = 30000000;
-  uint256 public constant rate = 10000;
-  uint8 public constant decimalPlaces = 5;
+  uint256 public constant TOTAL_SUPPLY = 30000000;
+  uint256 public constant RATE = 10000;
+  uint8 public constant DECIMAL_PLACES = 5;
+
+  // solium-disable-next-line security/no-block-members
   uint256 public openingTime = now + 1 days;
   uint256 public closingTime = openingTime + 1 days;
 
   function beforeEach() public {
-    token = new SimpleToken("Tooploox", "TPX", decimalPlaces, totalSupply);
-    crowdsale = new GenericCrowdsale(openingTime, closingTime, rate, address(this), token);
+    token = new SimpleToken("Tooploox", "TPX", DECIMAL_PLACES, TOTAL_SUPPLY);
+    crowdsale = new GenericCrowdsale(openingTime, closingTime, RATE, address(this), token);
   }
 
   function testSettingToken() public {
@@ -26,7 +28,7 @@ contract GenericCrowdsaleTest {
   function testTransferSenderTotalSupply() public {
     Assert.equal(
       token.balanceOf(address(this)),
-      totalSupply * (10 ** uint256(decimalPlaces)),
+      TOTAL_SUPPLY * (10 ** uint256(DECIMAL_PLACES)),
       "total supply not transfered to the sender"
     );
   }

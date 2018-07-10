@@ -31,14 +31,20 @@ contract PresaleCrowdsaleTest {
 
   function testDisallowBuyingNotWhitelisted() public {
     // solium-disable-next-line security/no-call-value
-    bool result = address(crowdsale).call.value(0.1 ether)(bytes4(keccak256("buyTokens(address)")), address(this));
+    bool result = address(crowdsale).call.value(0.1 ether)(
+      bytes4(keccak256("buyTokens(address)")),
+      address(this)
+    );
     Assert.equal(result, false, "allows buying not whitelisted users");
   }
 
   function testAllowBuyingWhitelisted() public {
     crowdsale.addToWhitelist(address(this));
     // solium-disable-next-line security/no-call-value
-    bool result = address(crowdsale).call.value(0.1 ether)(bytes4(keccak256("buyTokens(address)")), address(this));
+    bool result = address(crowdsale).call.value(0.1 ether)(
+      bytes4(keccak256("buyTokens(address)")),
+      address(this)
+    );
     Assert.equal(result, true, "disallows buying whitelisted users");
     crowdsale.removeFromWhitelist(address(this));
   }

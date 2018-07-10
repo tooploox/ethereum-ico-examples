@@ -23,6 +23,11 @@ contract MultiBeneficiaryTokenVesting is Ownable {
 
   address[] public beneficiaries;
 
+  modifier onlyBeneficiaries {
+    require(msg.sender == owner || shares[msg.sender] > 0, "You cannot release tokens!");
+    _;
+  }
+
   constructor(
     ERC20Basic _token,
     uint256 _start,
@@ -47,11 +52,6 @@ contract MultiBeneficiaryTokenVesting is Ownable {
 
     beneficiaries.push(_beneficiary);
     shares[_beneficiary] = _sharesAmount;
-  }
-
-  modifier onlyBeneficiaries {
-    require(msg.sender == owner || shares[msg.sender] > 0, "You cannot release tokens!");
-    _;
   }
 
   function releaseAllTokens() onlyBeneficiaries public {
@@ -91,6 +91,7 @@ contract MultiBeneficiaryTokenVesting is Ownable {
     uint256 currentBalance = token.balanceOf(this);
     uint256 totalBalance = currentBalance.add(released);
 
+    // solium-disable security/no-block-members
     if (block.timestamp < cliff) {
       return 0;
     } else if (block.timestamp >= start.add(duration)) {
@@ -98,6 +99,7 @@ contract MultiBeneficiaryTokenVesting is Ownable {
     } else {
       return totalBalance.mul(block.timestamp.sub(start)).div(duration);
     }
+    // solium-enable security/no-block-members
   }
 
   function release(address _beneficiary, uint256 _amount) private {
